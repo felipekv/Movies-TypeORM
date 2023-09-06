@@ -8,8 +8,12 @@ export const verifyNameExists = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const foundMovie: Movie | null = await movieRepo.findOne({
-    where: { name: req.body.name }
+  const movieName: string | undefined = req.body.name;
+
+  if (!movieName) return next();
+
+  const foundMovie: boolean = await movieRepo.exist({
+    where: { name: movieName },
   });
 
   if (foundMovie) throw new AppError("Movie already exists.", 409);
